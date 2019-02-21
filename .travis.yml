@@ -1,0 +1,51 @@
+language: node_js
+node_js: stable 
+
+cache:
+  directories:
+    - node_modules
+
+before_install:
+  - export TZ='Asia/Shanghai'
+
+install:
+  - npm install
+
+script:
+  - hexo clean
+  - hexo g && gulp
+
+after_script:
+  - cd ./public
+  - git init
+  - git config user.name "njZhuMin"
+  - git config user.email "minmin3772@gmail.com"
+  - git add .
+  - git commit -m "Travis CI Auto Builder at `date +"%Y-%m-%d %H:%M"`"
+  - git push --force --quiet "https://${Travis_Token}@${GH_REF}" master:public
+
+deploy:
+  provider: releases
+  skip_cleanup: true
+  on:
+    tags: true
+    repo: njZhuMin/Blog
+  api_key:
+    secure: bCaCqYbAZQDSGmc0mh2jDxaMABPjecCYonXPARHX7Sg65Fkb99FWblqGB7TJBIdz04vr5YwkxLD1tJzG8t0yfmTrjmRoTF7I+lnx7tdSRJgl1bCwf5M9W+i5Fthx1XWtWgCdQm/MTjPnTXBSvNAwpPBCacmw/7Q043axCzYJkmSk1pQW2dX4cV2yQ/Gi7rOEFxw3JW+bBAJkZBb0SRHIGxQ3a5Qav4z6sXCgVgcwsx9VCbaMRVferM524LgI4sdavC+Yc3tCXHE+5xFbGdfSYnBijAToKcTT6kXCsHfB9Y0wbu5tEZTLWi4e2XurljtTYkjugXTDCIuAmRaA/nH/oaJR8+k3InABNNzwSm+h486kyZruSWBe2l+tXwhona9aOgfqykGGL7L3hP18axZh2b1dGzntwtiij5UxPRJbfAOmhbxYQ6T3W88rStC7FI6Kf1qn3KHo6vpTYMkaA3uDDEFj2ImjGCUdM5+g2/NOBouHKzqMe9ubYiqMWJda0525uwG9YQw4ShelhYwfZz3hVrqhlgw7a1TZp/AFyoiSVMW924SUA8yF32l4nYQVPj+fI0wMzAQ0n3r97uOAoRxgnGDtFObc0reyMzkskD4tOJkJY04MVJNbnScozxPPw1MLXNwlP/CyxgcCz48rB6x8dGkFG4qEZ66ucLEShkSnofo=
+  file: ''
+
+branches:
+  only:
+    - master
+env:
+  global:
+   - GH_REF: github.com/njZhuMin/Blog.git
+
+# configure notifications (email, IRC, campfire etc)
+# please update this section to your needs!
+# https://docs.travis-ci.com/user/notifications/
+notifications:
+  email:
+    - minmin3772@gmail.com
+  on_success: change
+  on_failure: always
